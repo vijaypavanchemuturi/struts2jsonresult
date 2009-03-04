@@ -50,7 +50,7 @@ public class ResponseWrapper {
 			response.setHeader("Pragma", "No-cache");
 		}
 
-		if (gzip) {
+		if (gzip && isGzipInRequest(request)) {
 			response.addHeader("Content-Encoding", "gzip");
 			GZIPOutputStream out = null;
 			try {
@@ -66,5 +66,17 @@ public class ResponseWrapper {
 			response.getWriter().print(result);
 			response.flushBuffer();
 		}
+	}
+
+	/**
+	 * check whether gzip encoding is accepted by the browser again borrowed
+	 * from struts json plugin
+	 * 
+	 * @param request
+	 * @return
+	 */
+	private boolean isGzipInRequest(HttpServletRequest request) {
+		String header = request.getHeader("Accept-Encoding");
+		return header != null && header.indexOf("gzip") >= 0;
 	}
 }
