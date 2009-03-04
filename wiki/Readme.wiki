@@ -101,6 +101,7 @@ About how to use patterns in flexjson, refer to http://flexjson.sourceforge.net/
 ||out.characterEncoding||utf-8||http response character encoding ||
 ||out.gzip||false||whether to use gzip to compress the response, to reduce the network transfer load ||
 ||out.noCache||false||when set to true, the following 3 headers will be set.   Cache-Control set to no-cache, Expires set to 0  and Pragma set to No-cache  ||
+||prefix||false||when set to true, a prefix "{}&&" would be added before the json result, this is to prevent json attack, see [http://directwebremoting.org/blog/joe/2007/03/05/json_is_not_as_safe_as_people_think_it_is.html this blog] for the detail ||
 
 
 = Exception Handling =
