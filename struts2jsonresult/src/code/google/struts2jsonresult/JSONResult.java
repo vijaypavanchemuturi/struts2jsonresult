@@ -29,6 +29,11 @@ public class JSONResult implements Result {
 	private boolean prettyPrint;
 	private String rootName;
 	private boolean deepSerialize;
+	private boolean prefix;
+
+	public void setPrefix(boolean prefix) {
+		this.prefix = prefix;
+	}
 
 	private static final Log log = LogFactory.getLog(JSONResult.class);
 	private ResponseWrapper out = new ResponseWrapper();
@@ -104,33 +109,36 @@ public class JSONResult implements Result {
 			log.trace(String
 					.format("deepSerialize is set to %b", deepSerialize));
 		}
+		StringBuilder result = new StringBuilder();
+		if (prefix) {
+			result.append("{}&&");
+		}
 
-		String result;
 		if (deepSerialize) {
 			if (rootName != null) {
-				result = serializer.deepSerialize(rootName, targetObject);
+				result.append(serializer.deepSerialize(rootName, targetObject));
 			} else {
-				result = serializer.deepSerialize(targetObject);
+				result.append(serializer.deepSerialize(targetObject));
 			}
 		} else if (!prettyPrint) {
 			if (rootName != null) {
-				result = serializer.serialize(rootName, targetObject);
+				result.append(serializer.serialize(rootName, targetObject));
 			} else {
-				result = serializer.serialize(targetObject);
+				result.append(serializer.serialize(targetObject));
 			}
 		} else {
 			if (rootName != null) {
-				result = serializer.prettyPrint(rootName, targetObject);
+				result.append(serializer.prettyPrint(rootName, targetObject));
 			} else {
-				result = serializer.prettyPrint(targetObject);
+				result.append(serializer.prettyPrint(targetObject));
 			}
 		}
 
 		if (log.isTraceEnabled()) {
-			log.trace("result: " + result);
+			log.trace("result: " + result.toString());
 		}
 
-		out.writeResult(request, response, result);
+		out.writeResult(request, response, result.toString());
 	}
 
 	private void initSerializer() {
