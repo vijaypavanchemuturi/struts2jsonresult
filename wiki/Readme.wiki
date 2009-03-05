@@ -86,7 +86,10 @@ For example
 </action>
 }}}
 
-the patterns  will be translated to new JSONSerializer().exclude("*.class").exclude("gradeArticle").
+the patterns  will be translated to 
+{{{
+new JSONSerializer().exclude("*.class").exclude("gradeArticle").
+}}}
 
 About how to use patterns in flexjson, refer to http://flexjson.sourceforge.net/  and the [http://flexjson.sourceforge.net/javadoc/flexjson/JSONSerializer.html javadoc] of JSONSerializer
 
@@ -103,9 +106,9 @@ About how to use patterns in flexjson, refer to http://flexjson.sourceforge.net/
 ||out.gzip||false||whether to use gzip to compress the response, to reduce the network transfer load ||
 ||out.noCache||false||when set to true, the following 3 headers will be set.   Cache-Control set to no-cache, Expires set to 0  and Pragma set to No-cache  ||
 ||prefix||false||when set to true, a prefix "{}&&" would be added before the json result, this is to prevent json attack, see [http://directwebremoting.org/blog/joe/2007/03/05/json_is_not_as_safe_as_people_think_it_is.html this blog] for the detail ||
+||callbackParameter||null||when set, the result will be wrapped with a function. The function name is speicified by this callbackParameter. For example: when callbackParameter is set to callback, http://localhost:9080/spiderx/test/test?callback=alert  will generate a result like alert({....});||
 
-
-= Exception Handling =
+= Exception Handling = 
 
 
 You can define some global exception mapping in your struts.xml. when exception is thrown, an special status code can be used, and the client can deal with different exception type by the status code.
