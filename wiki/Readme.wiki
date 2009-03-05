@@ -16,7 +16,7 @@ You may also need libraries from struts to compile the source files.
 
 = Installation =
 
-Put the dependencies and the jsonresulttype.jar to your WEB-INF/lib directory.
+Put the dependencies and the struts2jsonresult-xx.jar to your WEB-INF/lib directory.
 
 = Configuration Example =
 
