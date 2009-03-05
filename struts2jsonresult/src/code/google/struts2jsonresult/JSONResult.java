@@ -2,6 +2,7 @@ package code.google.struts2jsonresult;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,8 +29,18 @@ public class JSONResult implements Result {
 	private List<String> patterns;
 	private boolean prettyPrint;
 	private String rootName;
+	private String callbackParameter;
 	private boolean deepSerialize;
 	private boolean prefix;
+
+	private Pattern callbackFunctionPattern;
+
+	public void setCallbackParameter(String callbackParameter) {
+		this.callbackParameter = callbackParameter.trim();
+		if (callbackFunctionPattern == null) {
+			callbackFunctionPattern = Pattern.compile("[a-zA-Z_$0-9]*");
+		}
+	}
 
 	public void setPrefix(boolean prefix) {
 		this.prefix = prefix;
@@ -78,6 +89,7 @@ public class JSONResult implements Result {
 		if (prettyPrint && deepSerialize) {
 			log.warn("prettyPrint can't be used with deepSerialize, ignored.");
 		}
+
 		ActionContext actionContext = invocation.getInvocationContext();
 		HttpServletResponse response = (HttpServletResponse) actionContext
 				.get(StrutsStatics.HTTP_RESPONSE);
@@ -88,20 +100,7 @@ public class JSONResult implements Result {
 			initSerializer();
 		}
 
-		Object targetObject;
-		if (this.target != null) {
-			ValueStack stack = invocation.getStack();
-			targetObject = stack.findValue(this.target);
-			if (log.isTraceEnabled()) {
-				log.trace(String.format("Evaluate serializer target %s to %s.",
-						target, targetObject));
-			}
-		} else {
-			targetObject = invocation.getAction();
-			if (log.isTraceEnabled()) {
-				log.trace("Using action instance as serializer target.");
-			}
-		}
+		Object targetObject = extractTargetObject(invocation);
 
 		if (log.isTraceEnabled()) {
 			log.trace(String.format("rootName is set to %s", rootName));
@@ -109,7 +108,22 @@ public class JSONResult implements Result {
 			log.trace(String
 					.format("deepSerialize is set to %b", deepSerialize));
 		}
+
 		StringBuilder result = new StringBuilder();
+		boolean appendCallback = false;
+		if (callbackParameter != null) {
+			String callback = request.getParameter(callbackParameter);
+			if (callback == null) {
+				log.debug("callback parameter is not set");
+			} else if (callbackFunctionPattern.matcher(callback).matches()) {
+				result.append(callback);
+				result.append('(');
+				appendCallback = true;
+			} else {
+				log
+						.debug("The callback function name contains invalid character, ignored");
+			}
+		}
 		if (prefix) {
 			result.append("{}&&");
 		}
@@ -133,12 +147,39 @@ public class JSONResult implements Result {
 				result.append(serializer.prettyPrint(targetObject));
 			}
 		}
-
+		if (appendCallback) {
+			result.append(");");
+		}
 		if (log.isTraceEnabled()) {
 			log.trace("result: " + result.toString());
 		}
 
 		out.writeResult(request, response, result.toString());
+	}
+
+	/**
+	 * find the target object according the target property(parameter) if not
+	 * set, the action will be used.
+	 * 
+	 * @param invocation
+	 * @return
+	 */
+	private Object extractTargetObject(ActionInvocation invocation) {
+		Object targetObject;
+		if (this.target != null) {
+			ValueStack stack = invocation.getStack();
+			targetObject = stack.findValue(this.target);
+			if (log.isTraceEnabled()) {
+				log.trace(String.format("Evaluate serializer target %s to %s.",
+						target, targetObject));
+			}
+		} else {
+			targetObject = invocation.getAction();
+			if (log.isTraceEnabled()) {
+				log.trace("Using action instance as serializer target.");
+			}
+		}
+		return targetObject;
 	}
 
 	private void initSerializer() {
