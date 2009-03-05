@@ -44,6 +44,7 @@ public class ResponseWrapper {
 		response.setContentType(contentType);
 		response.setStatus(statusCode);
 		response.setCharacterEncoding(characterEncoding);
+
 		if (noCache) {
 			response.setHeader("Cache-Control", "no-cache");
 			response.setHeader("Expires", "0");
@@ -63,6 +64,8 @@ public class ResponseWrapper {
 				}
 			}
 		} else {
+			response
+					.setContentLength(result.getBytes(characterEncoding).length);
 			response.getWriter().print(result);
 			response.flushBuffer();
 		}
