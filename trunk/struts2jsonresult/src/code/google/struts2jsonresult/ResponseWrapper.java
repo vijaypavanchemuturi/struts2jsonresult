@@ -1,10 +1,14 @@
 package code.google.struts2jsonresult;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * 
@@ -17,7 +21,8 @@ public class ResponseWrapper {
 	private String characterEncoding = "utf-8";
 	private boolean gzip;
 	private boolean noCache;
-	private int statusCode;
+	private int statusCode = 200;
+	private static final Log log = LogFactory.getLog(ResponseWrapper.class);
 
 	public void setContentType(String contentType) {
 		this.contentType = contentType;
@@ -64,10 +69,10 @@ public class ResponseWrapper {
 				}
 			}
 		} else {
-			response
-					.setContentLength(result.getBytes(characterEncoding).length);
-			response.getWriter().print(result);
-			response.flushBuffer();
+			int contentLength = result.getBytes(characterEncoding).length;
+			response.setContentLength(contentLength);
+			PrintWriter out = response.getWriter();
+			out.write(result);
 		}
 	}
 
