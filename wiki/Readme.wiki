@@ -161,7 +161,7 @@ Now when an exception occurs, for example a NullPointerException, following json
 
 The first expression to match a path that action will be taken thus short circuiting all other expressions defined later.
 
-so for "+class,+message,-* ", only the class and message properties are included. 
+so for "+class,+message,-`*` ", only the class and message properties are included. 
 
 = Credit =
 
