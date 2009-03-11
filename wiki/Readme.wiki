@@ -149,7 +149,9 @@ For example:
 }}}
 
 Now when an exception occurs, for example a NullPointerException, following json will be the output with a status code 500:
+
 {{{
+  {
  "class": "java.lang.NullPointerException",
     "message": null  
   }
@@ -159,7 +161,7 @@ Now when an exception occurs, for example a NullPointerException, following json
 
 The first expression to match a path that action will be taken thus short circuiting all other expressions defined later.
 
-so for "+class,+message,-*", only the class and message properties are included. 
+so for "+class,+message,-* ", only the class and message properties are included. 
 
 = Credit =
 
